@@ -1,0 +1,78 @@
+<!DOCTYPE html> 
+<html> 
+<head> 
+<meta charset="UTF-8"> 
+<title>Cart</title> 
+<link rel="stylesheet" 
+href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-
+awesome/4.7.0/css/font-awesome.min.css"> 
+<style> 
+body{padding-top:70px} 
+.fa-shopping-cart{position:relative;font-size:22px} 
+.badge{position:absolute;top:-6px;right:-8px;background:red;color:#Ưf;border-
+radius:50%;font-size:11px;padding:3px 6px} 
+.item-count{width:50px;text-align:center} 
+</style> 
+</head> 
+<body> 
+<nav class="navbar fixed-top bg-primary text-white"> 
+<span>Shop</span> 
+<i class="fa fa-shopping-cart"><span class="badge total-count">0</span></i> 
+</nav> 
+<div class="container"> 
+<div class="card text-center"> 
+<div class="card-body"> 
+  <h5>Product A</h5>
+  <p>$10</p> 
+<button class="btn btn-success add-to-cart" 
+data-id="1" data-name="Product A" data-price="10" data-
+img="https://via.placeholder.com/40"> 
+Add to Cart</button> 
+</div></div> 
+<h5>Cart</h5> 
+<div class="show-cart"></div> 
+<h6>Total: $<span class="total-cart">0</span></h6> 
+<button class="btn btn-danger clear-cart">Clear</button> 
+</div> 
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script> 
+<script> 
+var cart=JSON.parse(sessionStorage.getItem("cart"))||[]; 
+var save=()=>sessionStorage.setItem("cart",JSON.stringify(cart)); 
+var add=(id,n,p,i,c=1)=>{let 
+x=cart.find(e=>e.id==id);x?x.c+=c:cart.push({id,n,p,i,c});save()}; 
+var sub=id=>{let x=cart.find(e=>e.id==id);if(!x)return;x.c--
+;if(x.c<1)cart=cart.filter(e=>e.id!=id);save()}; 
+var del=id=>{cart=cart.filter(e=>e.id!=id);save()}; 
+var clear=()=>{cart=[];save()}; 
+var count=()=>cart.reduce((a,b)=>a+b.c,0); 
+var total=()=>cart.reduce((a,b)=>a+b.p*b.c,0).toFixed(2); 
+var draw=()=>{ 
+let h=""; 
+cart.forEach(e=>h+=` 
+<div class="row mb-2">
+<div class="col-4"><img src="${e.i}" width="30"> ${e.n}</div> 
+<div class="col-4"> 
+<button class="minus btn btn-sm btn-secondary" data-id="${e.id}">-</button> 
+<input class="item-count" value="${e.c}"> 
+<button class="plus btn btn-sm btn-secondary" data-id="${e.id}">+</button> 
+</div> 
+<div class="col-4">$${(e.p*e.c).toFixed(2)} 
+<button class="del btn btn-sm btn-danger" data-id="${e.id}">x</button> 
+</div></div>`); 
+$(".show-cart").html(h); 
+$(".total-cart").text(total()); 
+$(".total-count").text(count()); 
+}; 
+$(".add-to-cart").click(function(){ 
+add($(this).data("id"),$(this).data("name"),+$(this).data("price"),$(this).data("img"));dra
+w() 
+}); 
+$(".clear-cart").click(()=>{clear();draw()}); 
+$(".show-cart").on("click",".minus",e=>{sub($(e.target).data("id"));draw()}) 
+.on("click",".plus",e=>{add($(e.target).data("id"));draw()}) 
+.on("click",".del",e=>{del($(e.target).data("id"));draw()}); 
+draw(); 
+</script> 
+</body> 
+</html>
